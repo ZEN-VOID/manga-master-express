@@ -1,6 +1,6 @@
 """
 Seedance视频脚本大师 - 状态定义
-工作流: 小说原文 → 剧本格式化 → 全局风格设计 → 分镜规划 → (场景/角色/道具设计并行) → (拆解并行) → (生图并行) → 汇聚输出
+工作流: 小说原文 → 剧本格式化 → 全局风格设计 → 分镜规划 → (场景/角色/道具设计并行，JSON输出含实体列表) → (生图并行) → 汇聚输出
 """
 
 from typing import Optional, List, Dict, Any, Literal, Annotated
@@ -245,52 +245,7 @@ class PropOrchestratorOutput(BaseModel):
     message: str = Field(default="", description="执行消息")
 
 
-# ==================== 节点6: 场景拆解节点 ====================
-
-class SceneParserInput(BaseModel):
-    """场景拆解节点输入"""
-    scene_design: str = Field(..., description="场景设计文档内容")
-    project_name: str = Field(..., description="项目名称")
-
-
-class SceneParserOutput(BaseModel):
-    """场景拆解节点输出"""
-    scene_entities: List[DesignEntity] = Field(default=[], description="拆解后的场景实体列表")
-    status: str = Field(default="pending", description="执行状态")
-    message: str = Field(default="", description="执行消息")
-
-
-# ==================== 节点7: 角色拆解节点 ====================
-
-class CharacterParserInput(BaseModel):
-    """角色拆解节点输入"""
-    character_design: str = Field(..., description="角色设计文档内容")
-    project_name: str = Field(..., description="项目名称")
-
-
-class CharacterParserOutput(BaseModel):
-    """角色拆解节点输出"""
-    character_entities: List[DesignEntity] = Field(default=[], description="拆解后的角色实体列表")
-    status: str = Field(default="pending", description="执行状态")
-    message: str = Field(default="", description="执行消息")
-
-
-# ==================== 节点8: 道具拆解节点 ====================
-
-class PropParserInput(BaseModel):
-    """道具拆解节点输入"""
-    prop_design: str = Field(..., description="道具设计文档内容")
-    project_name: str = Field(..., description="项目名称")
-
-
-class PropParserOutput(BaseModel):
-    """道具拆解节点输出"""
-    prop_entities: List[DesignEntity] = Field(default=[], description="拆解后的道具实体列表")
-    status: str = Field(default="pending", description="执行状态")
-    message: str = Field(default="", description="执行消息")
-
-
-# ==================== 节点9: 场景生图节点 ====================
+# ==================== 节点7: 场景生图节点 ====================
 
 class SceneImageGenInput(BaseModel):
     """场景生图节点输入"""

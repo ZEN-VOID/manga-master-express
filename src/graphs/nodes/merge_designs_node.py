@@ -1,6 +1,6 @@
 """
 汇聚设计结果节点
-功能：将场景、角色、道具三个设计合并为最终输出，并保存文本文件到output/[影片名]/文本/
+功能：将场景、角色、道具三个设计合并为最终输出，并保存JSON文件到output/[影片名]/文本/
 """
 
 import os
@@ -43,12 +43,20 @@ def merge_designs_node(
     has_character = bool(state.character_design)
     has_prop = bool(state.prop_design)
     
-    if has_scene and has_character and has_prop:
+    failed_modules = []
+    if not has_scene:
+        failed_modules.append("场景设计")
+    if not has_character:
+        failed_modules.append("角色设计")
+    if not has_prop:
+        failed_modules.append("道具设计")
+
+    if not failed_modules:
         status = "PASS"
         message = "所有设计模块均已成功生成"
-    elif has_scene or has_character or has_prop:
-        status = "PASS"  # 部分成功也算PASS
-        message = "部分设计模块生成成功"
+    elif len(failed_modules) < 3:
+        status = "PASS"
+        message = f"部分设计模块生成成功，缺失: {', '.join(failed_modules)}"
     else:
         status = "FAIL"
         message = "所有设计模块均未生成"

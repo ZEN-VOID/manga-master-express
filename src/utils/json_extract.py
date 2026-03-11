@@ -30,7 +30,10 @@ def extract_entities_from_design(
     data: dict,
     entity_type: str
 ) -> List[DesignEntity]:
-    """从编排JSON中提取实体列表，使用C阶段contract作为生图提示词，B阶段作为降级"""
+    """
+    从编排JSON中提取实体列表。
+    优先使用C阶段contract的design_subject作为生图提示词，B阶段prompt作为降级。
+    """
     stage_a = data.get("stage_a", {})
     stage_b = data.get("stage_b", {})
     stage_c = data.get("stage_c", {})
@@ -40,12 +43,6 @@ def extract_entities_from_design(
     name_lookup = {}
     for item in stage_a.get(_get_a_list_key(entity_type), []):
         name_lookup[item.get(id_key, "")] = item.get(name_key, "")
-
-    b_prompt_lookup = {}
-    for item in stage_b.get("prompts", []):
-        eid = item.get(id_key, "")
-        if eid:
-            b_prompt_lookup[eid] = item
 
     entities: List[DesignEntity] = []
     contracts = stage_c.get("contracts", [])
@@ -57,7 +54,10 @@ def extract_entities_from_design(
                 continue
             ename = name_lookup.get(eid, contract.get(name_key, eid))[:50]
 
-            prompt = json.dumps(contract, ensure_ascii=False)
+            prompt = contract.get("design_subject", "")
+            if not prompt:
+                prompt = json.dumps(contract, ensure_ascii=False)
+                logger.warning(f"C阶段contract缺少design_subject，降级为整块JSON: {eid}")
 
             layout = contract.get("layout", {})
             aspect_ratio = layout.get("aspect_ratio", "16:9")
@@ -82,7 +82,7 @@ def extract_entities_from_design(
                 entity_id=eid,
                 entity_name=ename,
                 entity_type=entity_type,
-                prompt=prompt_item.get("prompt_en", ""),
+                prompt=prompt_item.get("prompt", ""),
                 aspect_ratio=prompt_item.get("aspect_ratio", "16:9"),
                 image_size=prompt_item.get("image_size", "4K" if entity_type == "scene" else "2K")
             ))
