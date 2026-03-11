@@ -66,35 +66,35 @@ def merge_designs_node(
         if state.formatted_script:
             script_path = save_text_file(
                 project_name,
-                f"格式化剧本_{timestamp}.md",
+                f"格式化剧本_{timestamp}.json",
                 state.formatted_script
             )
         
         if state.video_script:
             video_script_path = save_text_file(
                 project_name,
-                f"视频脚本_{timestamp}.md",
+                f"视频脚本_{timestamp}.json",
                 state.video_script
             )
         
         if state.scene_design:
             scene_design_path = save_text_file(
                 project_name,
-                f"场景设计_{timestamp}.md",
+                f"场景设计_{timestamp}.json",
                 state.scene_design
             )
         
         if state.character_design:
             character_design_path = save_text_file(
                 project_name,
-                f"角色设计_{timestamp}.md",
+                f"角色设计_{timestamp}.json",
                 state.character_design
             )
         
         if state.prop_design:
             prop_design_path = save_text_file(
                 project_name,
-                f"道具设计_{timestamp}.md",
+                f"道具设计_{timestamp}.json",
                 state.prop_design
             )
     except Exception as e:

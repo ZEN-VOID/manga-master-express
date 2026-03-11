@@ -158,94 +158,31 @@ def global_style_node(
         
         logger.info(f"[全局风格设计] 分析完成: 叙事类型={narrative_type}, 媒介={visual_medium}, 风格参照={style_reference}")
         
-        # 保存全局风格设计文档到文件
+        # 保存全局风格设计文档到文件（JSON格式）
         global_style_path = ""
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_dir = os.path.join("output", state.project_name, "文本")
             os.makedirs(output_dir, exist_ok=True)
             
-            # 构建全局风格设计文档内容
-            doc_content = f"""# 全局风格设计
-
-## 基本信息
-
-| 项目 | 值 |
-|------|------|
-| 项目名称 | {state.project_name} |
-| 集号 | 第{state.episode_no}集 |
-| 生成时间 | {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} |
-
-## 风格参数
-
-| 参数 | 值 |
-|------|------|
-| 叙事类型 | {narrative_type} |
-| 视觉媒介 | {visual_medium} |
-| 美学范式 | {aesthetic_paradigm} |
-| 风格参照 | {style_reference} |
-| 叙事节奏 | {narrative_pacing} |
-
-"""
+            doc_data = {
+                "project_name": state.project_name,
+                "episode_no": state.episode_no,
+                "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "narrative_type": narrative_type,
+                "visual_medium": visual_medium,
+                "aesthetic_paradigm": aesthetic_paradigm,
+                "style_reference": style_reference,
+                "narrative_pacing": narrative_pacing,
+                "style_breakdown": style_breakdown,
+                "global_style_prompt": global_style_prompt
+            }
             
-            # 添加六要素分解（如果有）- 在全局风格提示词之前
-            if style_breakdown:
-                doc_content += """## 六要素分解
-
-"""
-                # 核心定性
-                if style_breakdown.get("core_identity"):
-                    doc_content += f"""### 1. 核心定性
-{style_breakdown.get("core_identity")}
-
-"""
-                
-                # 技术栈
-                if style_breakdown.get("tech_stack"):
-                    doc_content += f"""### 2. 技术栈
-{style_breakdown.get("tech_stack")}
-
-"""
-                
-                # 光影色彩
-                if style_breakdown.get("light_color"):
-                    doc_content += f"""### 3. 光影色彩
-{style_breakdown.get("light_color")}
-
-"""
-                
-                # 构图空间
-                if style_breakdown.get("composition_space"):
-                    doc_content += f"""### 4. 构图空间
-{style_breakdown.get("composition_space")}
-
-"""
-                
-                # 动态质感
-                if style_breakdown.get("motion_texture"):
-                    doc_content += f"""### 5. 动态质感
-{style_breakdown.get("motion_texture")}
-
-"""
-                
-                # 规格排除
-                if style_breakdown.get("specs_exclusion"):
-                    doc_content += f"""### 6. 规格排除
-{style_breakdown.get("specs_exclusion")}
-
-"""
-            
-            # 全局风格提示词放在六要素分解之后
-            doc_content += f"""## 全局风格提示词
-
-{global_style_prompt}
-"""
-            
-            filename = f"全局风格设计_{timestamp}.md"
+            filename = f"全局风格设计_{timestamp}.json"
             global_style_path = os.path.join(output_dir, filename)
             
             with open(global_style_path, "w", encoding="utf-8") as f:
-                f.write(doc_content)
+                json.dump(doc_data, f, ensure_ascii=False, indent=2)
             
             logger.info(f"[全局风格设计] 文档已保存: {global_style_path}")
             

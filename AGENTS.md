@@ -25,18 +25,17 @@ output/
 | script_formatter | `nodes/script_formatter_node.py` | agent | 剧本格式化编排 | - | `config/script_formatter_llm_cfg.json` |
 | global_style | `nodes/global_style_node.py` | agent | 全局风格设计（导演层级底层调性） | - | `config/global_style_llm_cfg.json` |
 | storyboard_planner | `nodes/storyboard_planner_node.py` | agent | 分镜规划编辑 | - | `config/storyboard_planner_llm_cfg.json` |
-| scene_orchestrator | `nodes/scene_orchestrator_node.py` | agent | 场景全链路编排 | - | `config/scene_orchestrator_llm_cfg.json` |
-| character_orchestrator | `nodes/character_orchestrator_node.py` | agent | 角色全链路编排 | - | `config/character_orchestrator_llm_cfg.json` |
-| prop_orchestrator | `nodes/prop_orchestrator_node.py` | agent | 道具全链路编排 | - | `config/prop_orchestrator_llm_cfg.json` |
-| scene_parser | `nodes/scene_parser_node.py` | task | 场景拆解（提取Panel提示词） | - | - |
-| character_parser | `nodes/character_parser_node.py` | task | 角色拆解（提取Panel提示词） | - | - |
-| prop_parser | `nodes/prop_parser_node.py` | task | 道具拆解（提取Panel提示词） | - | - |
+| scene_orchestrator | `nodes/scene_orchestrator_node.py` | agent | 场景全链路编排（JSON输出，含场景宝典+实体列表） | - | `config/scene_orchestrator_llm_cfg.json` |
+| character_orchestrator | `nodes/character_orchestrator_node.py` | agent | 角色全链路编排（JSON输出，含角色小传+实体列表） | - | `config/character_orchestrator_llm_cfg.json` |
+| prop_orchestrator | `nodes/prop_orchestrator_node.py` | agent | 道具全链路编排（JSON输出，含道具物语+实体列表） | - | `config/prop_orchestrator_llm_cfg.json` |
 | scene_image_gen | `nodes/scene_image_gen_node.py` | task | 场景生图（调用nano-banana API） | - | - |
 | character_image_gen | `nodes/character_image_gen_node.py` | task | 角色生图（调用nano-banana API） | - | - |
 | prop_image_gen | `nodes/prop_image_gen_node.py` | task | 道具生图（调用nano-banana API） | - | - |
 | merge_designs | `nodes/merge_designs_node.py` | task | 汇聚设计结果和图片 | - | - |
 
 **类型说明**: task(task节点) / agent(大模型) / condition(条件分支) / looparray(列表循环) / loopcond(条件循环)
+
+> 注：场景/角色/道具拆解节点（parser）已移除，编排节点输出JSON直接含实体列表供生图消费。
 
 ## 工作流结构
 ```
@@ -51,20 +50,12 @@ output/
     ↓ 引用：全局风格提示词
     ↓
 ┌─────────────────────────────────────────┐
-│          三路并行：设计阶段               │
+│    三路并行：设计阶段（JSON输出含实体列表） │
 ├─────────────────┬───────────────────────┤
 │ 场景全链路编排   │ 角色全链路编排  │ 道具全链路编排 │
-│ scene_orchestrator │ character_orchestrator │ prop_orchestrator │
-│ (引用全局风格)     │ (引用全局风格)         │ (引用全局风格)   │
+│ (场景宝典)       │ (角色小传)       │ (道具物语)    │
 └─────────────────┴───────────────────────┘
-    ↓
-┌─────────────────────────────────────────┐
-│          三路并行：拆解阶段               │
-├─────────────────┬───────────────────────┤
-│ 场景拆解        │ 角色拆解       │ 道具拆解       │
-│ scene_parser     │ character_parser       │ prop_parser     │
-└─────────────────┴───────────────────────┘
-    ↓
+    ↓ 编排输出JSON直接含实体列表，无需拆解节点
 ┌─────────────────────────────────────────┐
 │          三路并行：生图阶段               │
 ├─────────────────┬───────────────────────┤

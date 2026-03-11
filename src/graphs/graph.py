@@ -1,6 +1,6 @@
 """
 Seedance视频脚本大师 - 主图编排
-工作流: 小说原文 → 剧本格式化 → 全局风格设计 → 分镜规划 → (场景/角色/道具设计并行) → (拆解并行) → (生图并行) → 汇聚输出
+工作流: 小说原文 → 剧本格式化 → 全局风格设计 → 分镜规划 → (场景/角色/道具设计并行，JSON输出含实体列表) → (生图并行) → 汇聚输出
 """
 
 from langgraph.graph import StateGraph, END
@@ -131,7 +131,7 @@ builder.add_edge(
     "merge_designs"
 )
 
-# 阶段7 → END
+# 阶段6 → END
 builder.add_edge("merge_designs", END)
 
 # ==================== 编译图 ====================
